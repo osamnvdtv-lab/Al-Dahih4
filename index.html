@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 مكتبة الطالب</title>
+
+<style>
+body{font-family:tajawal,Arial;background:#eef2ff;margin:0;text-align:center}
+header{background:linear-gradient(90deg,#4f46e5,#6b21a8,#ec4899);color:#fff;padding:20px;font-size:22px}
+.container{max-width:900px;margin:20px auto;background:#fff;padding:20px;border-radius:16px}
+input,select,button{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #ccc;font-size:16px}
+button{background:#4f46e5;color:#fff;border:none;font-weight:bold;cursor:pointer}
+.item{background:#f3f4f6;padding:10px;margin:10px;border-radius:10px;display:flex;justify-content:space-between;align-items:center}
+.item img{width:80px;height:100px;border-radius:8px;object-fit:cover}
+.hidden{display:none}
+.menu button{width:48%}
+.menu{display:flex;justify-content:space-between;flex-wrap:wrap}
+</style>
+
+</head>
+<body>
+
+<header>📚 مكتبة الطالب</header>
+
+<div class="container">
+
+<!-- تسجيل دخول -->
+<div id="loginDiv">
+  <h3>🔐 تسجيل الدخول</h3>
+  <input id="pass" type="password" placeholder="كلمة السر">
+  <button onclick="login()">دخول</button>
+</div>
+
+<!-- اختيار المرحلة -->
+<div id="stageDiv" class="hidden">
+  <h3>🎓 اختر المرحلة</h3>
+
+  <select id="stage">
+    <option value="primary">ابتدائي</option>
+    <option value="prep">إعدادي</option>
+    <option value="sec">ثانوي</option>
+  </select>
+
+  <select id="grade">
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+  </select>
+
+  <button onclick="openLibrary()">دخول المكتبة</button>
+</div>
+
+<!-- الأزرار -->
+<div id="menuDiv" class="hidden menu">
+  <button onclick="showLibrary()">📚 الكل</button>
+  <button onclick="showReviews()">📝 المراجعات</button>
+</div>
+
+<div id="content"></div>
+
+</div>
+
+<!-- ملفات خارجية -->
+<script src="books.js"></script>
+<script src="reviews.js"></script>
+
+<script>
+const STUDENT_PASSWORD = "1234";
+
+let selectedStage = "";
+let selectedGrade = "";
+
+/* ===== تسجيل الدخول ===== */
+function login(){
+  const pass = document.getElementById("pass").value.trim();
+
+  if(pass !== STUDENT_PASSWORD){
+    alert("❌ كلمة السر غلط");
+    return;
+  }
+
+  document.getElementById("loginDiv").classList.add("hidden");
+  document.getElementById("stageDiv").classList.remove("hidden");
+}
+
+/* ===== اختيار المرحلة ===== */
+function openLibrary(){
+  selectedStage = document.getElementById("stage").value;
+  selectedGrade = document.getElementById("grade").value;
+
+  document.getElementById("stageDiv").classList.add("hidden");
+  document.getElementById("menuDiv").classList.remove("hidden");
+
+  showLibrary();
+}
+
+/* ===== عرض الكتب + المراجعات ===== */
+function showLibrary(){
+  const key = selectedStage + "_" + selectedGrade;
+
+  let html = "<h2>📚 الكتب</h2>";
+
+  if(booksData[key]){
+    booksData[key].forEach(b=>{
+      html += `
+        <div class="item">
+          <img src="${b.img}">
+          <div>
+            <b>${b.name}</b><br>
+            <a href="${b.link}" target="_blank">📥 فتح الكتاب</a>
+          </div>
+        </div>
+      `;
+    });
+  } else {
+    html += "<p>لا توجد كتب</p>";
+  }
+
+  html += "<h2>📝 المراجعات</h2>";
+
+  if(reviewsData[key]){
+    reviewsData[key].forEach(r=>{
+      html += `
+        <div class="item">
+          <div>
+            <b>${r.subject}</b><br>
+            ${r.name}<br>
+            <a href="${r.link}" target="_blank">📥 فتح المراجعة</a>
+          </div>
+        </div>
+      `;
+    });
+  } else {
+    html += "<p>لا توجد مراجعات</p>";
+  }
+
+  document.getElementById("content").innerHTML = html;
+}
+
+/* ===== المراجعات فقط ===== */
+function showReviews(){
+  const key = selectedStage + "_" + selectedGrade;
+
+  let html = "<h2>📝 المراجعات</h2>";
+
+  if(reviewsData[key]){
+    reviewsData[key].forEach(r=>{
+      html += `
+        <div class="item">
+          <div>
+            <b>${r.subject}</b><br>
+            ${r.name}<br>
+            <a href="${r.link}" target="_blank">📥 فتح</a>
+          </div>
+        </div>
+      `;
+    });
+  } else {
+    html += "<p>لا توجد مراجعات</p>";
+  }
+
+  document.getElementById("content").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
